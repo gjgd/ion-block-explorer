@@ -1,0 +1,20 @@
+name: db
+app: ion-block-explorer
+component: aws-dynamodb
+org: gjgdserverless
+
+inputs:
+  name: ${app}-${name}-${stage}
+  region: us-east-1
+  # Don't delete the Database Table if "serverless remove" is run
+  deletionPolicy: retain
+  keySchema:
+    - AttributeName: network
+      KeyType: HASH
+    - AttributeName: blockHeight
+      KeyType: RANGE
+  attributeDefinitions:
+    - AttributeName: network
+      AttributeType: S
+    - AttributeName: blockHeight
+      AttributeType: N
