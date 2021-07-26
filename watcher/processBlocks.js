@@ -1,9 +1,17 @@
 require('dotenv').config()
-const Client = require('bitcoin-core');
+const BitcoinClient = require('bitcoin-core');
+const AWS = require("aws-sdk");
+
+AWS.config.update({
+  region: "us-east-1",
+});
+
+const docClient = new AWS.DynamoDB.DocumentClient();
+const tableName = process.env.AWS_DYNAMO_TABLE_NAME;
+
 const network = 'mainnet';
 // const network = 'testnet';
-
-const client = new Client({
+const client = new BitcoinClient({
   network,
   username: process.env.BITCOIN_RPC_USER,
   password: process.env.BITCOIN_RPC_PASSWORD,
@@ -37,6 +45,11 @@ const ionSidetreePrefix = 'ion:';
               blockMedianTime: block.mediantime,
               outputHex: output.scriptPubKey.hex,
             }
+            const params = {
+              TableName: tableName,
+              Item: data
+            };
+            await docClient.put(params).promise();
             console.log(JSON.stringify(data, null, 2))
           }
         }
