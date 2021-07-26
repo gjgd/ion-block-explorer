@@ -1,0 +1,14 @@
+{
+  "name": "watcher",
+  "version": "1.0.0",
+  "author": "gjgd <gjgd@protonmail.com>",
+  "scripts": {
+    "start": ""
+  },
+  "dependencies": {
+    "bitcoin-core": "^3.0.0"
+  },
+  "devDependencies": {
+    "dotenv": "^10.0.0"
+  }
+}
