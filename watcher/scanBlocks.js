@@ -20,11 +20,29 @@ const client = new BitcoinClient({
 const ionGenesisBlock = 667000;
 const ionSidetreePrefix = 'ion:';
 
+const getLatestIonTransactionHeight = async () => {
+  const params = {
+    TableName: tableName,
+    KeyConditionExpression: 'network = :network',
+    ExpressionAttributeValues: {
+      ':network': 'mainnet'
+    },
+    // Descending order of block height (most recent transaction first)
+    ScanIndexForward: false,
+    Limit: 1,
+  };
+  const record = await docClient.query(params).promise();
+  const blockHeight = record.Items[0].blockHeight;
+  return blockHeight
+};
+
 (async () => {
   const blockchainInfo = await client.getBlockchainInfo();
+  const latestTransactionHeight = await getLatestIonTransactionHeight();
+  console.log(`latest ion transaction is at: ${latestTransactionHeight}`)
   let blockHash = blockchainInfo.bestblockhash
   let block = await client.getBlock(blockHash, 2);
-  while (block.height >= ionGenesisBlock) {
+  while (block.height >= ionGenesisBlock && block.height >= latestTransactionHeight) {
     console.log(`processing block ${block.height}`)
     const txs = block.tx;
     for (let i = 0; i < txs.length; i += 1) {
