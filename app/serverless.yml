@@ -1,0 +1,11 @@
+name: app
+app: ion-block-explorer
+component: website
+org: gjgdserverless
+
+inputs:
+  domain: ion-block-explorer.gjgd.xyz
+  src:
+    src: ./src
+    hook: npm run build
+    dist: ./build
