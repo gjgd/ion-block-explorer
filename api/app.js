@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require('express');
+const cors = require('cors')
 const AWS = require("aws-sdk");
 
 AWS.config.update({
@@ -10,6 +11,10 @@ AWS.config.update({
 const app = express();
 const docClient = new AWS.DynamoDB.DocumentClient();
 const pageSize = 20;
+
+app.use(cors({
+  origin: ['http://localhost:3000']
+}))
 
 app.use(express.json());
 
