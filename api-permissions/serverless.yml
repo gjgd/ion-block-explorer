@@ -19,12 +19,8 @@ inputs:
     # AWS DynamoDB Table access
     - Effect: Allow
       Action:
-        - dynamodb:DescribeTable
         - dynamodb:Query
         - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
       Resource:
         - ${output:db.arn}
         - ${output:db.arn}/index/*
