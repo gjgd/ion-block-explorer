@@ -38,9 +38,25 @@ app.get('/transactions/:blockHeight', async (req, res) => {
 });
 
 app.get('/transactions', async (req, res) => {
-  const { from } = req.query;
-  if (from) {
-    res.status(200).send({ from });
+  const { before } = req.query;
+  if (before) {
+    const params = {
+      TableName: process.env.TABLE_NAME,
+      KeyConditionExpression: 'network = :network AND blockHeight < :blockHeight',
+      ExpressionAttributeValues: {
+        ':network': 'mainnet',
+        ':blockHeight': Number(before),
+      },
+      // Descending order of block height (most recent transaction first)
+      ScanIndexForward: false,
+      Limit: pageSize,
+    };
+    const record = await docClient.query(params).promise();
+    if (record.Items) {
+      res.status(200).send(record.Items);
+    } else {
+      res.sendStatus(404);
+    }
   } else {
     const params = {
       TableName: process.env.TABLE_NAME,
