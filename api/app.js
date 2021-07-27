@@ -10,7 +10,7 @@ AWS.config.update({
 
 const app = express();
 const docClient = new AWS.DynamoDB.DocumentClient();
-const pageSize = 20;
+const pageSize = 10;
 
 app.use(cors({
   origin: ['http://localhost:3000']
