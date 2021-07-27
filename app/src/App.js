@@ -6,7 +6,6 @@ import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import data from './data.json';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -18,13 +17,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function App() {
-  const [transactions, setTransactions] = React.useState(data);
+  const [transactions, setTransactions] = React.useState([]);
   const classes = useStyles();
 
   React.useEffect(() => {
     (async () => {
-      // const response = await fetch('https://ion-block-explorer-api.gjgd.xyz/transactions').then(res => res.json());
-      setTransactions(data.slice(0, 1));
+      const response = await fetch('https://ion-block-explorer-api.gjgd.xyz/transactions').then(res => res.json());
+      setTransactions(response);
     })();
   }, []);
 
@@ -68,7 +67,7 @@ export default function App() {
       <CssBaseline />
       <div className={classes.root}>
         <Paper variant="outlined" square style={{ width: '80%', margin: 'auto', marginTop: '20px' }}>
-          <MaterialTable columns={columns} data={data} options={{
+          <MaterialTable columns={columns} data={transactions} options={{
             pageSize: 10,
             search: false,
             tableLayout: 'fixed',
