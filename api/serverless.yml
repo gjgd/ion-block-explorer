@@ -1,0 +1,12 @@
+name: api
+app: ion-block-explorer
+component: express
+org: gjgdserverless
+
+inputs:
+  src: ./
+  # Permissions required for the AWS Lambda function to interact with other resources
+  roleName: ${output:api-permissions.name}
+  domain: ion-block-explorer-api.gjgd.xyz
+  env:
+    TABLE_NAME: ${output:db.name}

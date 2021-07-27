@@ -2,9 +2,6 @@
   "name": "watcher",
   "version": "1.0.0",
   "author": "gjgd <gjgd@protonmail.com>",
-  "scripts": {
-    "start": ""
-  },
   "dependencies": {
     "aws-sdk": "^2.954.0",
     "bitcoin-core": "^3.0.0"
