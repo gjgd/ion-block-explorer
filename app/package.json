@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "author": "gjgd <gjgd@protonmail.com>",
   "dependencies": {
+    "@material-table/core": "^3.2.4",
+    "@material-ui/core": "^4.12.2",
+    "moment": "^2.29.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
