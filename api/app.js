@@ -13,7 +13,7 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 const pageSize = 10;
 
 app.use(cors({
-  origin: ['http://localhost:3000']
+  origin: ['http://localhost:3000', 'https://ion-block-explorer.gjgd.xyz']
 }))
 
 app.use(express.json());
