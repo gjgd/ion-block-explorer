@@ -12,6 +12,8 @@ import ReactGA from 'react-ga';
 ReactGA.initialize('UA-177950673-2');
 ReactGA.pageview(window.location.pathname + window.location.search);
 
+console.log(`Current commit is ${process.env.REACT_APP_CURRENT_COMMIT}`);
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
