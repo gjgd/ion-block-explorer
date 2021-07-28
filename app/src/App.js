@@ -5,14 +5,19 @@ import { makeStyles } from '@material-ui/core/styles';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import Fab from '@material-ui/core/Fab';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
-  title: {
-    flexGrow: 1,
+  fab: {
+    margin: 'auto',
+    left: 0,
+    bottom: theme.spacing(2),
+    right: 0,
+    position: 'absolute',
   },
 }));
 
@@ -66,13 +71,21 @@ export default function App() {
     <>
       <CssBaseline />
       <div className={classes.root}>
-        <Paper variant="outlined" square style={{ width: '80%', margin: 'auto', marginTop: '20px' }}>
+        <Paper variant="outlined" square style={{ width: '80%', height: `${window.innerHeight - 100}px`, margin: 'auto', marginTop: '20px', overflow: 'scroll' }}>
           <MaterialTable columns={columns} data={transactions} options={{
             pageSize: 10,
             search: false,
             tableLayout: 'fixed',
+            paging: false,
           }} title="ION Block explorer" />
         </Paper>
+        <Fab variant="extended" className={classes.fab} onClick={async () => {
+          const earliestTransaction = transactions[transactions.length - 1];
+          const newTransactions = await fetch(`https://ion-block-explorer-api.gjgd.xyz/transactions?before=${earliestTransaction.blockHeight}`).then(res => res.json());
+          setTransactions([...transactions, ...newTransactions])
+        }}>
+          Load more
+        </Fab>
       </div>
     </>
   );
