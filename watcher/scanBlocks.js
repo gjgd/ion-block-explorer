@@ -32,6 +32,9 @@ const getLatestIonTransactionHeight = async () => {
     Limit: 1,
   };
   const record = await docClient.query(params).promise();
+  if (!record || !record.Items || record.Items.length === 0) {
+    return 0;
+  }
   const blockHeight = record.Items[0].blockHeight;
   return blockHeight
 };
