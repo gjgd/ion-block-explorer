@@ -2,6 +2,8 @@ require('dotenv').config()
 const BitcoinClient = require('bitcoin-core');
 const AWS = require("aws-sdk");
 
+const logger = require('./logger');
+
 AWS.config.update({
   region: "us-east-1",
 });
@@ -42,11 +44,11 @@ const getLatestIonTransactionHeight = async () => {
 (async () => {
   const blockchainInfo = await client.getBlockchainInfo();
   const latestTransactionHeight = await getLatestIonTransactionHeight();
-  console.log(`latest ion transaction is at: ${latestTransactionHeight}`)
+  logger.info(`latest ion transaction is at: ${latestTransactionHeight}`);
   let blockHash = blockchainInfo.bestblockhash
   let block = await client.getBlock(blockHash, 2);
   while (block.height >= ionGenesisBlock && block.height >= latestTransactionHeight) {
-    console.log(`processing block ${block.height}`)
+    logger.info(`processing block ${block.height}`)
     const txs = block.tx;
     for (let i = 0; i < txs.length; i += 1) {
       const tx = txs[i];
@@ -71,7 +73,7 @@ const getLatestIonTransactionHeight = async () => {
               Item: data
             };
             await docClient.put(params).promise();
-            console.log(JSON.stringify(data, null, 2))
+            logger.info(JSON.stringify(data, null, 2))
           }
         }
       }
