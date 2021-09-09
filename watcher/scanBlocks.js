@@ -73,7 +73,7 @@ const getLatestIonTransactionHeight = async () => {
               Item: data
             };
             await docClient.put(params).promise();
-            logger.info(JSON.stringify(data, null, 2))
+            logger.info(`found ${tx.hash} in block ${block.height}`)
           }
         }
       }
