@@ -24,8 +24,8 @@ class MetricsClient {
     gauge.set(value);
   }
 
-  push() {
-    return this.pushgateway.push({ jobName: this.jobName })
+  pushAdd() {
+    return this.pushgateway.pushAdd({ jobName: this.jobName })
   }
 }
 

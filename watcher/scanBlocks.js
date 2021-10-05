@@ -45,8 +45,11 @@ const getLatestIonTransactionHeight = async () => {
 
 (async () => {
   const blockchainInfo = await client.getBlockchainInfo();
-  await metricsClient.gauge({ label: "ion_best_block", value: blockchainInfo.blocks })
+  const bestBlock = blockchainInfo.blocks;
+  await metricsClient.gauge({ label: "ion_best_block", value: bestBlock })
   const latestTransactionHeight = await getLatestIonTransactionHeight();
+  const blockLag = bestBlock - latestTransactionHeight;
+  await metricsClient.gauge({ label: "ion_block_lag", value: blockLag })
   logger.info(`latest ion transaction is at: ${latestTransactionHeight}`);
   let blockHash = blockchainInfo.bestblockhash
   let block = await client.getBlock(blockHash, 2);
@@ -84,5 +87,5 @@ const getLatestIonTransactionHeight = async () => {
     blockHash = block.previousblockhash;
     block = await client.getBlock(blockHash, 2);
   }
-  await metricsClient.push();
+  await metricsClient.pushAdd();
 })()
