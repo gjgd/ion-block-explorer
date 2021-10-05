@@ -84,4 +84,5 @@ const getLatestIonTransactionHeight = async () => {
     blockHash = block.previousblockhash;
     block = await client.getBlock(blockHash, 2);
   }
+  await metricsClient.push();
 })()
