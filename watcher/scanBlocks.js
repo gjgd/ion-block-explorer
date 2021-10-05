@@ -3,6 +3,8 @@ const BitcoinClient = require('bitcoin-core');
 const AWS = require("aws-sdk");
 
 const logger = require('./logger');
+const MetricsClient = require('./metrics');
+const metricsClient = new MetricsClient();
 
 AWS.config.update({
   region: "us-east-1",
@@ -43,6 +45,7 @@ const getLatestIonTransactionHeight = async () => {
 
 (async () => {
   const blockchainInfo = await client.getBlockchainInfo();
+  await metricsClient.gauge({ label: "ion_best_block", value: blockchainInfo.blocks })
   const latestTransactionHeight = await getLatestIonTransactionHeight();
   logger.info(`latest ion transaction is at: ${latestTransactionHeight}`);
   let blockHash = blockchainInfo.bestblockhash
