@@ -1,4 +1,3 @@
-
 const { Gauge, Pushgateway } = require('prom-client');
 
 class MetricsClient {

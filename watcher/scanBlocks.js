@@ -43,7 +43,7 @@ const getLatestIonTransactionHeight = async () => {
   return blockHeight
 };
 
-(async () => {
+const main = async () => {
   const blockchainInfo = await client.getBlockchainInfo();
   const bestBlock = blockchainInfo.blocks;
   await metricsClient.gauge({ label: "ion_best_block", value: bestBlock })
@@ -88,4 +88,10 @@ const getLatestIonTransactionHeight = async () => {
     block = await client.getBlock(blockHash, 2);
   }
   await metricsClient.pushAdd();
-})()
+}
+
+try {
+  main()
+} catch(error) {
+  logger.error(`Could not pushAdd ${error.message} ${error.code} ${error.stack} `)
+}
