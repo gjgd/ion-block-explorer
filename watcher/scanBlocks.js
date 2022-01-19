@@ -46,6 +46,11 @@ const getLatestIonTransactionHeight = async () => {
 const main = async () => {
   const blockchainInfo = await client.getBlockchainInfo();
   const bestBlock = blockchainInfo.blocks;
+  const tipOfTheChain = blockchainInfo.headers;
+  if (bestBlock !== tipOfTheChain) {
+    logger.info(`stopping block scanning... not at the tip yet. bestBlock=${bestBlock} tip=${tipOfTheChain}`);
+    return
+  }
   await metricsClient.gauge({ label: "ion_best_block", value: bestBlock })
   const latestTransactionHeight = await getLatestIonTransactionHeight();
   const blockLag = bestBlock - latestTransactionHeight;
