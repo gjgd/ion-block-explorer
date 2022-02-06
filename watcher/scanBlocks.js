@@ -8,6 +8,7 @@ const metricsClient = new MetricsClient();
 
 const ionGenesisBlock = 667000;
 const ionSidetreePrefix = 'ion:';
+const network = process.env.BITCOIN_NETWORK;
 
 const main = async () => {
   const blockchainInfo = await getBlockchainInfo();

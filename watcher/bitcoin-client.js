@@ -3,8 +3,7 @@ const retry = require('async-retry');
 const BitcoinClient = require('bitcoin-core');
 
 const retries = 1;
-const network = 'mainnet';
-// const network = 'testnet';
+const network = process.env.BITCOIN_NETWORK;
 const client = new BitcoinClient({
   network,
   username: process.env.BITCOIN_RPC_USER,
