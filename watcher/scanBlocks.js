@@ -1,39 +1,13 @@
 require('dotenv').config()
-const AWS = require("aws-sdk");
+const { updateDb, getLatestIonTransactionHeight } = require('./aws-client');
 const { getBlockchainInfo, getBlock } = require('./bitcoin-client');
 
 const logger = require('./logger');
 const MetricsClient = require('./metrics');
 const metricsClient = new MetricsClient();
 
-AWS.config.update({
-  region: "us-east-1",
-});
-
-const docClient = new AWS.DynamoDB.DocumentClient();
-const tableName = process.env.AWS_DYNAMO_TABLE_NAME;
-
 const ionGenesisBlock = 667000;
 const ionSidetreePrefix = 'ion:';
-
-const getLatestIonTransactionHeight = async () => {
-  const params = {
-    TableName: tableName,
-    KeyConditionExpression: 'network = :network',
-    ExpressionAttributeValues: {
-      ':network': 'mainnet'
-    },
-    // Descending order of block height (most recent transaction first)
-    ScanIndexForward: false,
-    Limit: 1,
-  };
-  const record = await docClient.query(params).promise();
-  if (!record || !record.Items || record.Items.length === 0) {
-    return 0;
-  }
-  const blockHeight = record.Items[0].blockHeight;
-  return blockHeight
-};
 
 const main = async () => {
   const blockchainInfo = await getBlockchainInfo();
@@ -71,11 +45,7 @@ const main = async () => {
               blockMedianTime: block.mediantime,
               outputHex: output.scriptPubKey.hex,
             }
-            const params = {
-              TableName: tableName,
-              Item: data
-            };
-            await docClient.put(params).promise();
+            await updateDb(data);
             logger.info(`found ${tx.hash} in block ${block.height}`)
           }
         }
