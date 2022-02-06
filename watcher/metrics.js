@@ -1,4 +1,5 @@
 const { Gauge, Pushgateway } = require('prom-client');
+const logger = require('./logger');
 
 class MetricsClient {
   constructor(pushgatewayUrl =  "http://localhost:9091") {
@@ -23,8 +24,12 @@ class MetricsClient {
     gauge.set(value);
   }
 
-  pushAdd() {
-    return this.pushgateway.pushAdd({ jobName: this.jobName })
+  async pushAdd() {
+    try {
+      return await this.pushgateway.pushAdd({ jobName: this.jobName })
+    } catch(error) {
+      logger.error(`Could not pushAdd ${error.message} ${error.code} ${error.stack} `)
+    }
   }
 }
 

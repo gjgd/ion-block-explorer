@@ -58,8 +58,4 @@ const main = async () => {
   await metricsClient.pushAdd();
 }
 
-try {
-  main()
-} catch(error) {
-  logger.error(`Could not pushAdd ${error.message} ${error.code} ${error.stack} `)
-}
+main()
