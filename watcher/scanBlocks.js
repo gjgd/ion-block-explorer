@@ -1,6 +1,6 @@
 require('dotenv').config()
-const BitcoinClient = require('bitcoin-core');
 const AWS = require("aws-sdk");
+const { getBlockchainInfo, getBlock } = require('./bitcoin-client');
 
 const logger = require('./logger');
 const MetricsClient = require('./metrics');
@@ -12,14 +12,6 @@ AWS.config.update({
 
 const docClient = new AWS.DynamoDB.DocumentClient();
 const tableName = process.env.AWS_DYNAMO_TABLE_NAME;
-
-const network = 'mainnet';
-// const network = 'testnet';
-const client = new BitcoinClient({
-  network,
-  username: process.env.BITCOIN_RPC_USER,
-  password: process.env.BITCOIN_RPC_PASSWORD,
-});
 
 const ionGenesisBlock = 667000;
 const ionSidetreePrefix = 'ion:';
@@ -44,7 +36,7 @@ const getLatestIonTransactionHeight = async () => {
 };
 
 const main = async () => {
-  const blockchainInfo = await client.getBlockchainInfo();
+  const blockchainInfo = await getBlockchainInfo();
   const bestBlock = blockchainInfo.blocks;
   const tipOfTheChain = blockchainInfo.headers;
   if (bestBlock !== tipOfTheChain) {
@@ -57,7 +49,7 @@ const main = async () => {
   await metricsClient.gauge({ label: "ion_block_lag", value: blockLag })
   logger.info(`latest ion transaction is at: ${latestTransactionHeight}`);
   let blockHash = blockchainInfo.bestblockhash
-  let block = await client.getBlock(blockHash, 2);
+  let block = await getBlock(blockHash, 2);
   while (block.height >= ionGenesisBlock && block.height >= latestTransactionHeight) {
     logger.info(`processing block ${block.height}`)
     const txs = block.tx;
@@ -90,7 +82,7 @@ const main = async () => {
       }
     }
     blockHash = block.previousblockhash;
-    block = await client.getBlock(blockHash, 2);
+    block = await getBlock(blockHash, 2);
   }
   await metricsClient.pushAdd();
 }
