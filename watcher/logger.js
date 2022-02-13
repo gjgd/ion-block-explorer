@@ -1,4 +1,5 @@
 const { createLogger, format, transports } = require('winston');
+
 const { combine, timestamp, ms, printf } = format;
 
 const customFormat = printf(({ level, message, label, timestamp, ms }) => {
@@ -7,14 +8,10 @@ const customFormat = printf(({ level, message, label, timestamp, ms }) => {
 
 const logger = createLogger({
   level: 'info',
-  format: combine(
-    timestamp(),
-    ms(),
-    customFormat,
-  ),
+  format: combine(timestamp(), ms(), customFormat),
   transports: [
     new transports.File({ filename: 'watcher.log' }),
-    new transports.Console()
+    new transports.Console(),
   ],
 });
 

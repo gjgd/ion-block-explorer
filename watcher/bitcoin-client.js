@@ -18,7 +18,7 @@ const getBlockchainInfo = async () => {
     },
     { retries }
   );
-}
+};
 
 const getBlock = async (blockHash, verbosity) => {
   return await retry(
@@ -28,9 +28,9 @@ const getBlock = async (blockHash, verbosity) => {
     },
     { retries }
   );
-}
+};
 
 module.exports = {
   getBlockchainInfo,
   getBlock,
-}
+};
