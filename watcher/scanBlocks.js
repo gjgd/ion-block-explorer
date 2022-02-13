@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 require('dotenv').config();
 const { updateDb, getLatestIonTransactionHeight } = require('./aws-client');
 const { getBlockchainInfo, getBlock } = require('./bitcoin-client');
@@ -37,13 +38,14 @@ const main = async () => {
     for (let i = 0; i < txs.length; i += 1) {
       const tx = txs[i];
       const outputs = tx.vout;
-      for (const output of outputs) {
+      for (let j = 0; i < outputs.length; j += 1) {
+        const output = outputs[j];
         const { asm } = output.scriptPubKey;
         const hexDataMatches = asm.match(/\s*OP_RETURN ([0-9a-fA-F]+)$/);
         if (hexDataMatches && hexDataMatches.length !== 0) {
           const data = Buffer.from(hexDataMatches[1], 'hex').toString();
           if (data.startsWith(ionSidetreePrefix)) {
-            const data = {
+            const sidetreeTransactionData = {
               network,
               txHash: tx.hash,
               blockHash: block.hash,
@@ -52,7 +54,7 @@ const main = async () => {
               blockMedianTime: block.mediantime,
               outputHex: output.scriptPubKey.hex,
             };
-            await updateDb(data);
+            await updateDb(sidetreeTransactionData);
             logger.info(`found ${tx.hash} in block ${block.height}`);
           }
         }

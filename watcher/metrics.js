@@ -31,6 +31,7 @@ class MetricsClient {
       logger.error(
         `Could not pushAdd ${error.message} ${error.code} ${error.stack} `
       );
+      return null;
     }
   }
 }
