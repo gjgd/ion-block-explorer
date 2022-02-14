@@ -37,4 +37,4 @@ class MetricsClient {
   }
 }
 
-module.exports = MetricsClient;
+module.exports = new MetricsClient();

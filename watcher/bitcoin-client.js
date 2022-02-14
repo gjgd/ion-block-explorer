@@ -1,7 +1,7 @@
 const retry = require('async-retry');
 const BitcoinClient = require('bitcoin-core');
 const logger = require('./logger');
-const MetricsClient = require('./metrics');
+const metrics = require('./metrics');
 
 const retries = 0;
 const network = process.env.BITCOIN_NETWORK;
@@ -10,7 +10,6 @@ const bitcoinClient = new BitcoinClient({
   username: process.env.BITCOIN_RPC_USER,
   password: process.env.BITCOIN_RPC_PASSWORD,
 });
-const metricsClient = new MetricsClient();
 
 const retryBitcoinFunction = async (bitcoinFunction, ...args) => {
   try {
@@ -26,14 +25,14 @@ const retryBitcoinFunction = async (bitcoinFunction, ...args) => {
     return res;
   } catch (error) {
     logger.error(`[retryBitcoinFunction]: ${error}`);
-    await metricsClient.gauge({
+    await metrics.gauge({
       name: 'bitcoin_client_error_time_ms',
       value: Date.now(),
       errorName: error.name,
       errorMessage: error.message,
     });
     // TODO: refactor pushAdd
-    await metricsClient.pushAdd();
+    await metrics.pushAdd();
     throw error;
   }
 };
