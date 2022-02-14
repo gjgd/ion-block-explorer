@@ -1,33 +1,43 @@
 const retry = require('async-retry');
-
 const BitcoinClient = require('bitcoin-core');
+const logger = require('./logger');
+const MetricsClient = require('./metrics');
 
-const retries = 1;
+const retries = 0;
 const network = process.env.BITCOIN_NETWORK;
-const client = new BitcoinClient({
+const bitcoinClient = new BitcoinClient({
   network,
   username: process.env.BITCOIN_RPC_USER,
   password: process.env.BITCOIN_RPC_PASSWORD,
 });
+const metricsClient = new MetricsClient();
+
+const retryBitcoinFunction = async (bitcoinFunction, ...args) => {
+  try {
+    const res = await retry(
+      async (bail, attemptNumber) => {
+        logger.debug(
+          `calling ${bitcoinFunction} with args ${args} and attemptNumber ${attemptNumber}`
+        );
+        return bitcoinClient[bitcoinFunction](...args);
+      },
+      { retries }
+    );
+    return res;
+  } catch (error) {
+    logger.error(`[retryBitcoinFunction]: ${error}`);
+    await metricsClient.gauge({ label: 'bitcoin_client_error', value: 1 });
+    await metricsClient.pushAdd();
+    throw error;
+  }
+};
 
 const getBlockchainInfo = async () => {
-  return await retry(
-    async (bail) => {
-      const res = await client.getBlockchainInfo();
-      return res;
-    },
-    { retries }
-  );
+  return retryBitcoinFunction('getBlockchainInfo');
 };
 
 const getBlock = async (blockHash, verbosity) => {
-  return await retry(
-    async (bail) => {
-      const res = await client.getBlock(blockHash, verbosity);
-      return res;
-    },
-    { retries }
-  );
+  return retryBitcoinFunction('getBlock', blockHash, verbosity);
 };
 
 module.exports = {

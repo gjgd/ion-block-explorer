@@ -38,7 +38,7 @@ const main = async () => {
     for (let i = 0; i < txs.length; i += 1) {
       const tx = txs[i];
       const outputs = tx.vout;
-      for (let j = 0; i < outputs.length; j += 1) {
+      for (let j = 0; j < outputs.length; j += 1) {
         const output = outputs[j];
         const { asm } = output.scriptPubKey;
         const hexDataMatches = asm.match(/\s*OP_RETURN ([0-9a-fA-F]+)$/);
