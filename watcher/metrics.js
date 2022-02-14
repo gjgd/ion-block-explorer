@@ -1,4 +1,4 @@
-const { Gauge, Pushgateway, Counter } = require('prom-client');
+const { Gauge, Pushgateway } = require('prom-client');
 const logger = require('./logger');
 
 class MetricsClient {
@@ -7,37 +7,22 @@ class MetricsClient {
     this.pushgatewayUrl = pushgatewayUrl;
     this.pushgateway = new Pushgateway(pushgatewayUrl);
     this.gauges = {};
-    this.counters = {};
   }
 
-  getGauge(label) {
-    if (!(label in this.gauges)) {
-      this.gauges[label] = new Gauge({
-        name: label,
-        help: label,
+  getGauge(name, params = {}) {
+    if (!(name in this.gauges)) {
+      this.gauges[name] = new Gauge({
+        name,
+        help: name,
+        labelNames: Object.keys(params),
       });
     }
-    return this.gauges[label];
+    return this.gauges[name];
   }
 
-  gauge({ label, value }) {
-    const gauge = this.getGauge(label);
-    gauge.set(value);
-  }
-
-  getCounter(label) {
-    if (!(label in this.counters)) {
-      this.counters[label] = new Counter({
-        name: label,
-        help: label,
-      });
-    }
-    return this.counters[label];
-  }
-
-  counterInc({ label }) {
-    const counter = this.getCounter(label);
-    counter.inc();
+  gauge({ name, value, ...labels }) {
+    const gauge = this.getGauge(name, labels);
+    gauge.labels(labels).set(value);
   }
 
   async pushAdd() {

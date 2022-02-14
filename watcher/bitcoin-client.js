@@ -26,11 +26,11 @@ const retryBitcoinFunction = async (bitcoinFunction, ...args) => {
     return res;
   } catch (error) {
     logger.error(`[retryBitcoinFunction]: ${error}`);
-    // console.log(error.name, error.message, Date.now());
-    // TODO: add more labels
     await metricsClient.gauge({
-      label: 'bitcoin_client_error',
+      name: 'bitcoin_client_error_time_ms',
       value: Date.now(),
+      errorName: error.name,
+      errorMessage: error.message,
     });
     // TODO: refactor pushAdd
     await metricsClient.pushAdd();

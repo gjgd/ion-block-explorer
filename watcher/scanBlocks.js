@@ -22,10 +22,10 @@ const main = async () => {
     );
     return;
   }
-  await metricsClient.gauge({ label: 'ion_best_block', value: bestBlock });
+  await metricsClient.gauge({ name: 'ion_best_block', value: bestBlock });
   const latestTransactionHeight = await getLatestIonTransactionHeight();
   const blockLag = bestBlock - latestTransactionHeight;
-  await metricsClient.gauge({ label: 'ion_block_lag', value: blockLag });
+  await metricsClient.gauge({ name: 'ion_block_lag', value: blockLag });
   logger.info(`latest ion transaction is at: ${latestTransactionHeight}`);
   let blockHash = blockchainInfo.bestblockhash;
   let block = await getBlock(blockHash, 2);
