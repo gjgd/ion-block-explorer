@@ -2,35 +2,39 @@ const { Gauge, Pushgateway } = require('prom-client');
 const logger = require('./logger');
 
 class MetricsClient {
-  constructor(pushgatewayUrl =  "http://localhost:9091") {
-    this.jobName = "ion-watcher";
+  constructor(pushgatewayUrl = 'http://localhost:9091') {
+    this.jobName = 'ion-watcher';
     this.pushgatewayUrl = pushgatewayUrl;
     this.pushgateway = new Pushgateway(pushgatewayUrl);
     this.gauges = {};
   }
 
-  getGauge(label) {
-    if (!(label in this.gauges)) {
-      this.gauges[label] = new Gauge({
-        name: label,
-        help: label,
-      })
+  getGauge(name, params = {}) {
+    if (!(name in this.gauges)) {
+      this.gauges[name] = new Gauge({
+        name,
+        help: name,
+        labelNames: Object.keys(params),
+      });
     }
-    return this.gauges[label]
+    return this.gauges[name];
   }
 
-  gauge({ label, value }) {
-    const gauge = this.getGauge(label)
-    gauge.set(value);
+  gauge({ name, value, ...labels }) {
+    const gauge = this.getGauge(name, labels);
+    gauge.labels(labels).set(value);
   }
 
   async pushAdd() {
     try {
-      return await this.pushgateway.pushAdd({ jobName: this.jobName })
-    } catch(error) {
-      logger.error(`Could not pushAdd ${error.message} ${error.code} ${error.stack} `)
+      return await this.pushgateway.pushAdd({ jobName: this.jobName });
+    } catch (error) {
+      logger.error(
+        `Could not pushAdd ${error.message} ${error.code} ${error.stack} `
+      );
+      return null;
     }
   }
 }
 
-module.exports = MetricsClient;
+module.exports = new MetricsClient();

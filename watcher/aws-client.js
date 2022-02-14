@@ -1,7 +1,7 @@
-const AWS = require("aws-sdk");
+const AWS = require('aws-sdk');
 
 AWS.config.update({
-  region: "us-east-1",
+  region: 'us-east-1',
 });
 
 const docClient = new AWS.DynamoDB.DocumentClient();
@@ -12,7 +12,7 @@ const getLatestIonTransactionHeight = async () => {
     TableName: tableName,
     KeyConditionExpression: 'network = :network',
     ExpressionAttributeValues: {
-      ':network': 'mainnet'
+      ':network': 'mainnet',
     },
     // Descending order of block height (most recent transaction first)
     ScanIndexForward: false,
@@ -22,19 +22,19 @@ const getLatestIonTransactionHeight = async () => {
   if (!record || !record.Items || record.Items.length === 0) {
     return 0;
   }
-  const blockHeight = record.Items[0].blockHeight;
-  return blockHeight
+  const { blockHeight } = record.Items[0];
+  return blockHeight;
 };
 
 const updateDb = async (data) => {
   const params = {
     TableName: tableName,
-    Item: data
+    Item: data,
   };
   await docClient.put(params).promise();
-}
+};
 
 module.exports = {
   getLatestIonTransactionHeight,
   updateDb,
-}
+};
