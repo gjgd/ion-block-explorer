@@ -6,15 +6,11 @@ Needs a bitcoin node running
 
 ## Config
 
-Needs an `.env` file with the following config
-
-```bash
-BITCOIN_RPC_USER=
-BITCOIN_RPC_PASSWORD=
-AWS_DYNAMO_TABLE_NAME=
-AWS_ACCESS_KEY_ID=
-AWS_SECRET_ACCESS_KEY=
 ```
+cp .env.example .env
+```
+
+And fill out the values
 
 ## Setup Watcher
 
